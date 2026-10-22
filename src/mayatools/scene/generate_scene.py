@@ -60,28 +60,17 @@ def generate_scene(
         """Helper to call a function and track its created objects"""
         result = func(**kwargs)
         if "name" in result:
-            created_objects.append(cabinet)
-            cmds.parent(cabinet, scene_group)
-            
-            # Create cabinet material
-            cabinet_color = [0.8, 0.8, 0.8] if modern_style else [0.6, 0.4, 0.2]
-            _create_and_track(
-                create_material,
-                material_type="lambert" if modern_style else "wood",
-                name=f"{name}_cabinet_{i}_material",
-                color=cabinet_color,
-                assign_to=cabinet
-            )
-        
-        return {
-            "success": True,
-            "name": scene_group,
-            "scene_type": "office",
-            "objects_count": len(created_objects),
-            "desks_count": desk_count
-        }
-    
-    elif scene_type.lower() == "park":
+            created_objects.append(result["name"])
+            # Parent to scene group
+            try:
+                cmds.parent(result["name"], scene_group)
+            except:
+                # May already be parented if the function does grouping internally
+                pass
+        return result
+
+    # Generate scene based on type
+    if scene_type.lower() == "city":
         # Get park parameters
         park_size = parameters.get('park_size', 60.0)
         tree_count = parameters.get('tree_count', 10)
@@ -317,19 +306,6 @@ def generate_scene(
     
     else:
         raise ValueError(f"Unknown scene type: {scene_type}. Use city, forest, living_room, office, or park")
-.append(result["name"])
-            # Parent to scene group
-            try:
-                cmds.parent(result["name"], scene_group)
-            except:
-                # May already be parented if the function does grouping internally
-                pass
-        return result
-    
-    # Generate scene based on type
-    if scene_type.lower() == "city":
-        # Get city parameters
-        blocks = parameters.get('blocks', 3)
         building_density = parameters.get('building_density', 0.8)
         include_cars = parameters.get('include_cars', True)
         street_width = parameters.get('street_width', 10.0)
