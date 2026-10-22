@@ -304,8 +304,7 @@ def generate_scene(
             "has_fountain": include_fountain
         }
     
-    else:
-        raise ValueError(f"Unknown scene type: {scene_type}. Use city, forest, living_room, office, or park")
+    elif scene_type.lower() == "city":
         building_density = parameters.get('building_density', 0.8)
         include_cars = parameters.get('include_cars', True)
         street_width = parameters.get('street_width', 10.0)

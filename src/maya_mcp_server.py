@@ -13,10 +13,10 @@ from itertools import chain
 
 import mcp.server.stdio
 from mcp.types import Tool, TextContent, ImageContent, EmbeddedResource
-from mcp.server.fastmcp.utilities.func_metadata import func_metadata
-from mcp.server.fastmcp.utilities.types import Image
-from mcp.server.fastmcp.server import Context
-from mcp.server.lowlevel import NotificationOptions, Server
+from mcp.server.mcpserver.utilities.func_metadata import func_metadata
+from mcp.server.mcpserver.utilities.types import Image
+from mcp.server.mcpserver.server import Context
+from mcp.server.mcpserver import MCPServer
 from mcp.server.models import InitializationOptions
 import pydantic_core
 
@@ -291,16 +291,16 @@ def convert_to_content(
     return [TextContent(type="text", text=result)]
 
 
-server = Server("MayaMCP")
+server = MCPServer("MayaMCP")
 
-@server.list_tools()
+@server.tool()
 async def handle_list_tools() -> list[Tool]:
     """ handle request from MCP client to get a list of tools """
     logger.info("Requesting a list of tools.")
     return _operation_manager.get_tools()
 
 
-@server.call_tool()
+@server.tool()
 async def handle_call_tool(
     name: str, 
     arguments: dict | None
@@ -333,21 +333,7 @@ async def handle_call_tool(
 
 
 async def run():
-    async with mcp.server.stdio.stdio_server() as (read_stream, write_stream):
-        await server.run(
-            read_stream,
-            write_stream,
-            InitializationOptions(
-                server_name="MayaMCP",
-                server_version=__version__,
-                capabilities=server.get_capabilities(
-                    notification_options=NotificationOptions(),
-                    experimental_capabilities={},
-                ),
-            ),
-        )
-
-
+    await server.run_stdio_async()
 if __name__ == '__main__':
 
     _operation_manager = OperationsManager()
