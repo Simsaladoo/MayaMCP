@@ -69,7 +69,7 @@ def create_skin_shader(
     # Set specular color / eccentricity
     r, g, b = specular_color
     cmds.setAttr(f"{shader}.specularColor", r, g, b, type="double3")
-    cmds.setAttr(f"{shader}.specularEccentricity", float(specular_eccentricity))
+    cmds.setAttr(f"{shader}.eccentricity", float(specular_eccentricity))
 
     # Create/reuse shading group
     sg = f"{shader_name}SG"
@@ -102,7 +102,7 @@ def create_skin_shader(
                     "file", asTexture=True, name=rough_node
                 )
             cmds.connectAttr(
-                f"{rough_node}.outColor", f"{shader}.specularRollOff"
+                f"{rough_node}.outColorR", f"{shader}.specularRollOff"
             )
             cmds.setAttr(
                 f"{rough_node}.fileTextureName", roughness_path, type="string"
@@ -130,7 +130,7 @@ def create_skin_shader(
             bump_node = cmds.shadingNode(
                 "bump2d", asUtility=True, name=bump_node
             )
-        cmds.connectAttr(f"{bump_node}.out", f"{shader}.normalCamera")
+        cmds.connectAttr(f"{bump_node}.outNormal", f"{shader}.normalCamera")
         cmds.setAttr(f"{bump_node}.bumpDepth", float(bump_strength))
         created_nodes.append(bump_node)
 
