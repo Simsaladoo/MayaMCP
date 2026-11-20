@@ -44,7 +44,7 @@ logging.basicConfig(
 
 logger = logging.getLogger("MayaMCP")
 
-_operation_manager = None
+_operation_manager = None  # Will be initialized in main block
 
 
 class MayaConnection:
@@ -335,7 +335,6 @@ async def handle_call_tool(
 async def run():
     await server.run_stdio_async()
 if __name__ == '__main__':
-
     _operation_manager = OperationsManager()
     _operation_manager.find_tools()
 
